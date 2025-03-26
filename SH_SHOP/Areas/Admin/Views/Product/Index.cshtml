@@ -1,0 +1,114 @@
+﻿@model IEnumerable<SH_SHOP.Models.Product>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container">
+    <div class="d-flex justify-content-start">
+        <a class="btn btn-dark rounded-pill  mb-2 me-2" asp-action="Add">Thêm sản phẩm</a>
+    </div>
+
+    <table id="productTable" class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-2">
+                    Product Name
+                </th>
+                <th class="col-md-1">
+                    @Html.DisplayNameFor(model => model.Price)
+                </th>
+                <th class="col-md-4">
+                    Images
+                </th>
+                <th class="col-md-2">
+                    Size - Quantity - Color
+                </th>
+                <th class="col-md-1">
+                    Category
+                </th>
+
+                <th class="col-md-2"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProductName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Price)
+                    </td>
+                    <td>
+                        @if (item.Images != null && item.Images.Any())
+                        {
+                            <div class="row">
+                                @foreach (var image in item.Images)
+                                {
+                                    <div class="col-md-6">
+                                        <img src="~/images/Product/@image.Url" alt="Product Image" class="img-fluid rounded" style="width: 80%; height: auto;" />
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p>No image available</p>
+                        }
+                    </td>
+                    <td>
+                        @if (item.ProductDetails != null)
+                        {
+                            @foreach (var productDetail in item.ProductDetails)
+                            {
+                                @if (productDetail.Size != null && productDetail.Quantity != null && productDetail.Color != null)
+                                {
+                                    <div>
+                                        Size: @productDetail.Size - Quantity: @productDetail.Quantity - Color: @productDetail.Color <a asp-action="RemoveProductDetail" asp-route-id="@productDetail.ProductId" class="bi bi-x-lg text-danger btn btn-sm"></a>
+                                    </div>
+                                }
+                                else if (productDetail.Size != null && productDetail.Quantity != null)
+                                {
+                                    <div>
+                                        Size: @productDetail.Size - Quantity: @productDetail.Quantity <a asp-action="RemoveProductDetail" asp-route-id="@productDetail.ProductId" class="bi bi-x-lg text-danger btn btn-sm"></a>
+                                    </div>
+                                }
+                                else if (productDetail.Color != null && productDetail.Quantity != null)
+                                {
+                                    <div>
+                                        Color: @productDetail.Color - Quantity: @productDetail.Quantity <a asp-action="RemoveProductDetail" asp-route-id="@productDetail.ProductId" class="bi bi-x-lg text-danger btn btn-sm"></a>
+                                    </div>
+                                }
+
+                            }
+                        }
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Category.Name)
+                    </td>
+                    <td class="d-flex justify-content-between">
+                        <a asp-action="Detail" asp-route-id="@item.ProductId" class="bi bi-ticket-detailed fs-4 me-3"></a>
+                        <a asp-action="Update" asp-route-id="@item.ProductId" class="bi bi-pencil-square fs-4 me-3"></a>
+                        <a asp-action="Delete" asp-route-id="@item.ProductId" class="bi bi-trash3 fs-4 me-3"></a>
+                        <a href="@Url.Action("AddProductDetail", "Product", new { productId = item.ProductId, quantity = 1 })" class="text-decoration-none">Thêm SQC</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section scripts {
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+    <script>
+        $(document).ready(function () {
+            $('#productTable').DataTable();
+        });
+    </script>
+}

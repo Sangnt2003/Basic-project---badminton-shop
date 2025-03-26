@@ -1,0 +1,85 @@
+﻿@using System.Collections
+@model List<Product>
+@using System.Security.Claims;
+@inject ApplicationDbContext context;
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+}
+<div class="px-4 px-lg-0">
+    <div class="pb-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 p-5 bg-white rounded shadow-sm mb-5" style="border-radius:20px">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <p class="fw-bold h2">Giỏ hàng</p>
+                            </thead>
+                            <tbody>
+                                @if (Model.Count == 0)
+                                {
+                                    <p class="text-center h3">Không có sản phẩm nào trong giỏ hàng</p>
+                                    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary rounded-pill">Quay lại trang chủ</a>
+                                }
+                                else
+                                {
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td class="border-0 align-middle col">
+                                                <div class="p-2">
+                                                    <div class="col-12 col-lg-13 offset-lg-1 mt-2 text-center">
+                                                        @if (item.Images != null && item.Images.Any())
+                                                        {
+                                                            <img src="/images/Product/@item.Images[0].Url" alt="Ảnh sản phẩm" class="img-fluid" style="max-height: 200px; max-width: 200px;">
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="border-0 align-middle col"><strong>@item.ProductName</strong></td>
+                                            @if(item.ShoppingCarts != null && item.ShoppingCarts.Any())
+                                            {
+                                                <td class="border-0 align-middle col"><strong>@item.ShoppingCarts.FirstOrDefault(sc => sc.UserId == userId)?.UnitPrice VNĐ</strong></td>
+                                            }
+                                            <td class="border-0 align-middle col">
+                                                @if(item.ShoppingCarts != null)
+                                                {
+                                                    @foreach (var cartItem in item.ShoppingCarts.Where(sc => sc.UserId == userId))
+                                                    {
+                                                    <td class="border-0 align-middle col text-center">
+                                                        <form asp-controller="ShoppingCart" asp-action="UpdateCartItemQuantity" method="post">
+                                                            <input type="hidden" name="productId" value="@item.ProductId" />
+                                                            <input type="hidden" name="userId" value="@userId" />
+                                                            <input class="text-center" type="number" id="quantity" name="quantity" value="@cartItem.Quantity" required onchange="this.form.submit()" style="width: 60px;">
+                                                        </form>
+                                                    </td>
+                                                    <td class="border-0 align-middle col" style="position: relative;">
+                                                        <form asp-controller="ShoppingCart" asp-action="RemoveItem" method="post" style="position: absolute; top: 0; right: 0;">
+                                                            <input type="hidden" name="productId" value="@item.ProductId" />
+                                                            <input type="hidden" name="userId" value="@userId" />
+                                                            <button type="submit" class="bi bi-x-lg text-danger bg-white"></button>
+                                                        </form>
+                                                    </td>
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+            <div>
+                <ul class="list-unstyled mb-4">
+                    <li class="d-flex justify-content-between py-3 border-bottom fw-bold h4"><strong class="text-muted">Tổng Tiền </strong><strong>$@Model.Sum(x => x.ShoppingCarts.FirstOrDefault(sc => sc.UserId == userId)?.UnitPrice * (x.ShoppingCarts.FirstOrDefault(sc => sc.UserId == userId)?.Quantity ?? 0)) VNĐ</strong></li>
+                </ul>
+                <a asp-action="Checkout" asp-controller="ShoppingCart" class="w-100 btn btn-dark rounded-pill py-2 btn-block">Đặt hàng</a>
+            </div>
+        </div>
+    </div>
+</div>

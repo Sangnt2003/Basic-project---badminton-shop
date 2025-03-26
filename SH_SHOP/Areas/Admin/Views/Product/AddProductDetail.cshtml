@@ -1,0 +1,25 @@
+﻿@model ProductDetail
+
+<div class="container">
+    @using (Html.BeginForm("AddToProductDetail", "Product", FormMethod.Post))
+    {
+        @Html.HiddenFor(model => model.ProductId)
+
+        <div class="form-group">
+            Kích cỡ
+            @Html.TextBoxFor(model => model.Size, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            Màu sắc
+            @Html.TextBoxFor(model => model.Color, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            Số lượng
+            @Html.TextBoxFor(model => model.Quantity, new { @class = "form-control" })
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add to Product Detail</button>
+    }
+</div>

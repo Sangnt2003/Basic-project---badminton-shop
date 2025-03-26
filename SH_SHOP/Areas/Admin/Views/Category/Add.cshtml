@@ -1,0 +1,26 @@
+﻿@model SH_SHOP.Models.Category
+
+@{
+    ViewData["Title"] = "Add";
+}
+
+<h1 class="text-center">Thêm loại sản phẩm</h1>
+<div class="container">
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Add">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group mb-3">
+                    <label class="control-label">Tên loại</label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Thêm" class="btn btn-dark" /> |
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

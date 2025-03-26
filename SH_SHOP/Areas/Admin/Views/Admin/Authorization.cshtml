@@ -1,0 +1,56 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+@{
+    bool isAdmin = User.Identity.IsAuthenticated && UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), "Admin").Result;
+    bool isManager = User.Identity.IsAuthenticated && UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), "Manager").Result;
+    bool isSuperAdmin = User.Identity.IsAuthenticated && UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), "SuperAdmin").Result;
+}
+
+<h1 class="h1 text-center">Phân quyền tài khoản</h1>
+<div class="container">
+    <a class="h4 text-decoration-none me-2 boder btn bg-dark text-white" asp-area="Admin" asp-controller="Admin" asp-action="UserStatistics">Thống kê User</a>
+    <a class="h4 text-decoration-none me-2 boder btn bg-dark text-white" asp-area="Admin" asp-controller="Admin" asp-action="MonthlySalesStatistics">Thống kê số lượng đơn hàng</a>
+    <a class="h4 text-decoration-none me-2 boder btn bg-dark text-white" asp-area="Admin" asp-controller="Admin" asp-action="TopSellingProducts">Thống kê sản phẩm bán chạy</a>
+    <a class="h4 text-decoration-none me-2 boder btn bg-dark text-white" asp-area="Admin" asp-controller="Admin" asp-action="ProfitStatistics">Thống kê lợi nhuận</a>
+    <table class="table table-bordered table-hover" style="border: 5px solid black; text-align:center;">
+        <thead>
+            <tr>
+                <th scope="col">Tên tài khoản</th>
+                <th scope="col">Chức vụ</th>
+                <th scope="col">Cập nhật chức vụ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="align-middle">@item.UserName</td>
+                    <td class="align-middle">@item.Name</td>
+                    <td class="align-middle" style="text-align: right;">
+                        <form asp-controller="Admin" asp-action="UpdateUserRole" method="post">
+                            <input type="hidden" name="userId" value="@item.UserId" />
+                            <div class="form-floating mb-3">
+                                <select name="roleId" class="form-select border-0" aria-required="true" onchange="this.form.submit()">
+                                    <option disabled selected>Select Role</option>
+                                    @foreach (var role in ViewBag.Role)
+                                    {
+                                        <option value="@role.Value">@role.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        </form>
+                    </td>
+                    <td class="align-middle">
+                        @if (isSuperAdmin || (isAdmin && ( item.Name == "Customer" || item.Name == "Manager")))
+                        {
+                            <form asp-controller="Admin" asp-action="DeleteUser" method="post">
+                                <input type="hidden" name="userId" value="@item.UserId" />
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

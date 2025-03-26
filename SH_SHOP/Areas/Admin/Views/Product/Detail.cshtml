@@ -1,0 +1,76 @@
+﻿@model SH_SHOP.Models.Product
+
+@{
+    ViewData["Title"] = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="text-center">Chi tiết sản phẩm</h1>
+
+<div class="container">
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Tên sản phẩm
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ProductName)
+        </dd>
+        <dt class="col-sm-2">
+            Giá
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+        <dt class="col-sm-2">
+            Mô tả
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        @if (Model.Gender != null)
+        {
+            <dt class="col-sm-2">
+                Giới tính
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Gender)
+            </dd>
+        }
+        <dt class="col-sm-2">
+            Hình ảnh
+        </dt>
+        <dd class="col-sm-10">
+            @foreach (var image in Model.Images)
+            {
+                <img src="~/images/Product/@image.Url" alt="Product Image" class="img-fluid rounded" style="width: 140px; height: 300px; margin-right:20px;" />
+            }
+        </dd>
+        <dt class="col-sm-2">
+            Loại sản phẩm
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Category.Name)
+        </dd>
+        <dt class="col-sm-2">
+            Thương hiệu
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TradeMark.Name)
+        </dd>
+        @if (Model.Promotion != null)
+        {
+            <dt class="col-sm-2">
+                Giảm giá
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Promotion.Discount)%
+            </dd>
+        }
+    </dl>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model?.ProductId" class="btn btn-secondary">Chỉnh sửa</a> |
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+
+</div>

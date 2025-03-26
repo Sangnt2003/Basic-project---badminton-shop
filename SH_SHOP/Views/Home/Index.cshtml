@@ -1,0 +1,152 @@
+﻿@model IEnumerable<SH_SHOP.Models.Product>
+@using System.Security.Claims;
+@inject ApplicationDbContext context;
+@{
+    ViewData["Title"] = "Index";
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+}
+<div id="carouselExampleIndicators" class="carousel slide">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+    <div class="carousel-inner mb-4">
+        <div class="carousel-item active">
+            <img src="~/images/Banner/background.png" class="d-block w-100" style="height:700px;" alt="...">
+        </div>
+        <div class="carousel-item">
+            <img src="~/images/Banner/Banner_Nanoflare.png" class="d-block w-100" style="height:700px;" alt="...">
+        </div>
+        <div class="carousel-item">
+            <img src="~/images/Banner/Banner_giaycaulong.png" class="d-block w-100" style="height:700px;" alt="...">
+        </div>    
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+<div class="container">
+    <div class="row promo-box">
+        <div class="col-lg-4 col-md-4 col-sm-6 text-center col-6">
+            <div class="promo-item">
+                <div class="icon">
+                    <img width="50" height="50" class="lazyload" src="/images/vanchuyentoanquoc.png" alt="Vận chuyển toàn quốc" />
+                </div>
+                <div class="info">
+                    Vận chuyển <span>TOÀN QUỐC</span> <br> Thanh toán khi nhận hàng
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 text-center col-sm-6 col-6">
+            <div class="promo-item">
+                <div class="icon">
+                    <img width="50" height="50" class="lazyload" src="/images/chatluong.png" alt="" />
+                </div>
+                <div class="info">
+                    <span>Bảo đảm chất lượng</span> <br>Sản phẩm bảo đảm chất lượng.
+                </div>
+            </div>
+        </div>      
+        <div class="col-lg-4 col-md-4 col-sm-6 text-center col-6">
+            <div class="promo-item">
+                <div class="icon">
+                    <img width="50" height="50" class="lazyload" src="/images/doisanpham.png" />
+                </div>
+                <div class="info">
+                    <span>Đổi sản phẩm mới</span><br> nếu sản phẩm lỗi
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container px-5">
+    <h3 class="text-center mt-5">CÁC SẢN PHẨM</h3>
+    <div class="row mt-5">
+        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+            <div class="card h-100">
+                <img src="~/images/Product/votcaulong.png" alt="Vợt cầu lông" class="card-img-top">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title text-center mb-2">Vợt cầu lông</h3>
+                    <div class="mt-auto text-end">
+                        <a asp-action="ProductList" asp-controller="Home" class="btn btn-lg text-decoration-none text-black" asp-route-categoryId="1" style="background-color:#DCDCDC">Mua ngay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+            <div class="card h-100">
+                <img src="~/images/Product/giaycaulong.png" alt="Giày cầu lông" class="card-img-top">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title text-center">Giày cầu lông</h3>
+                    <div class="mt-auto text-end">
+                        <a asp-action="ProductList" asp-controller="Home" class="btn btn-lg text-decoration-none text-black" asp-route-categoryId="2" style="background-color:#DCDCDC">Mua ngay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+            <div class="card h-100">
+                <img src="~/images/Product/aocaulong.png" alt="Áo cầu lông" class="card-img-top">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title text-center">Áo cầu lông</h3>
+                    <div class="mt-auto text-end">
+                        <a asp-action="ProductList" asp-controller="Home" class="btn btn-lg text-decoration-none text-black" asp-route-categoryId="7" style="background-color:#DCDCDC">Mua ngay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+            <div class="card h-100">
+                <img src="~/images/Product/quancaulong.png" alt="Quần cầu lông" class="card-img-top">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title text-center">Quần cầu lông</h3>
+                    <div class="mt-auto text-end">
+                        <a asp-action="ProductList" asp-controller="Home" class="btn btn-lg text-decoration-none text-black" asp-route-categoryId="6" style="background-color:#DCDCDC">Mua ngay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+            <div class="card h-100">
+                <img src="~/images/Product/phukiencaulong.png" alt="Phụ kiện cầu lông" class="card-img-top">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title text-center">Phụ kiện cầu lông</h3>
+                    <div class="mt-auto text-end">
+                        <a asp-action="ProductList" asp-controller="Home" class="btn btn-lg text-decoration-none text-black" asp-route-categoryId="3" style="background-color:#DCDCDC">Mua ngay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+            <div class="card h-100">
+                <img src="~/images/Product/tuicaulong.png" alt="Túi đựng" class="card-img-top">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title text-center">Túi đựng</h3>
+                    <div class="mt-auto text-end">
+                        <a asp-action="ProductList" asp-controller="Home" class="btn btn-lg text-decoration-none text-black" asp-route-categoryId="5" style="background-color:#DCDCDC">Mua ngay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+            <div class="card h-100">
+                <img src="~/images/Product/vottennis.png" alt="Vợt tennis" class="card-img-top">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title text-center">Vợt tennis</h3>
+                    <div class="mt-auto text-end">
+                        <a asp-action="ProductList" asp-controller="Home" class="btn btn-lg text-decoration-none text-black" asp-route-categoryId="4" style="background-color:#DCDCDC">Mua ngay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

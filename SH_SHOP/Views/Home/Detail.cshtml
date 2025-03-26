@@ -1,0 +1,295 @@
+﻿@model SH_SHOP.Models.Product;
+@using System.Security.Claims;
+@inject ApplicationDbContext context;
+@inject SH_SHOP.Repositories.IProductRepository productRepository;
+@{
+    ViewData["Title"] = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var userFullName = context.Users.FirstOrDefault(u => u.Id == userId)?.FullName;
+    int totalRating = 0;
+    foreach (var evaluation in Model.Evaluations)
+    {
+        totalRating += evaluation.Rating;
+    }
+    double averageRating = Model.Evaluations.Count > 0 ? (double)totalRating / Model.Evaluations.Count : 0;
+    averageRating = Math.Round(averageRating, 1);
+    int fullStars = (int)Math.Floor(averageRating);
+    double remainder = averageRating - fullStars;
+    int halfStar = remainder >= 0.1 && remainder <= 0.3 ? 1 : 0;
+    int emptyStars = 5 - fullStars - halfStar;
+
+    var productDetails = await productRepository.GetProductDetailsAsync(Model.ProductId);
+    bool hasNonDefaultColors = productDetails.Any(productDetail => productDetail.Color == null);
+    bool hasNonDefaultSizes = productDetails.Any(productDetail => productDetail.Size == null);
+    bool allOutOfStock = productDetails.All(productDetail => productDetail.Quantity == 0);
+}
+
+<h1 class="text-center mb-4">Chi tiết sản phẩm</h1>
+<div class="container" style="margin-left: auto;margin-right: auto;width: 1200px;">
+    <div class="row">
+        <div class="row">
+            <div class="col-md-6 text-center">
+                @if (Model.Images != null && Model.Images.Any())
+                {
+                    <img id="mainImage" src="~/images/Product/@Model.Images[0].Url" alt="Product Image" class="img-fluid rounded main-image" style="max-width: 350px; min-height: 600px;" />
+                }
+            </div>
+            <div class="col-md-6">
+                <h2>@Model.ProductName</h2>
+                @if (Model.TradeMark != null)
+                {
+                    <h5>Thương hiệu: @Model.TradeMark.Name</h5>
+                }
+                @if (Model.Promotion != null && Model.Promotion.Discount > 0)
+                {
+                    <h5>
+                        Giá gốc: <strike class="text-dark">
+                            @string.Format("{0:N0}", (float)Model.Price) VNĐ
+                        </strike>
+                    </h5>
+                    <h5>
+                        Giá giảm sốc: <i class="text-danger" style="font-weight: bold;">@string.Format("{0:N0}", (float)Model.DiscountedPrice) VNĐ</i>
+                    </h5>
+                }
+                else
+                {
+                    <h5>
+                        Giá : <i class="text-danger" style="font-weight: bold; ">@string.Format("{0:N0}", (float)Model.Price) VNĐ</i>
+                    </h5>
+                }
+                @{
+                    var isAvailable = productDetails.Any(pd => pd.Quantity > 0);
+                }
+                @if (isAvailable)
+                {
+                    <h5>Tình trạng: Còn hàng</h5>
+                }
+                else
+                {
+                    <h5>Tình trạng: Tạm hết hàng</h5>
+                }
+
+                <div class="col-md-6">
+                    <div>
+                        <!-- Form để thêm sản phẩm vào giỏ hàng -->
+                        <form method="post" asp-action="AddToCart" asp-controller="ShoppingCart">
+                            <input type="hidden" name="userId" value="@userId" />
+                            <input type="hidden" name="productId" value="@Model.ProductId" />
+                            <input type="hidden" name="categoryId" value="@Model.CategoryId" />
+                            <div class="row">
+                                @if (!hasNonDefaultSizes && hasNonDefaultColors)
+                                {
+                                    <div class="form-group row align-items-center m-0">
+                                        <input id="color" name="color" type="hidden" />
+                                        <select id="size" name="size" class="form-control">
+                                            <option>Chọn size</option>
+                                            @foreach (var productDetail in productDetails)
+                                            {
+                                                @if (productDetail.Quantity > 0)
+                                                {
+                                                    <option value="@productDetail.Size">@productDetail.Size</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@productDetail.Size" disabled>@productDetail.Size</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+
+                                }
+                                else if (!hasNonDefaultColors && hasNonDefaultSizes)
+                                {
+                                    <div class="form-group row align-items-center m-0">
+
+                                        <input id="size" name="size" type="hidden" />
+                                        <select id="color" name="color" class="form-control m-0">
+                                            <option>Chọn màu</option>
+                                            @foreach (var productDetail in productDetails)
+                                            {
+                                                @if (productDetail.Quantity > 0)
+                                                {
+                                                    <option value="@productDetail.Color">@productDetail.Color</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@productDetail.Color" disabled>@productDetail.Color</option>
+                                                }
+                                            }
+                                        </select>
+
+                                    </div>
+                                }
+                                else if (!hasNonDefaultColors && !hasNonDefaultSizes)
+                                {
+                                    <div class="col-md-6">
+                                        <select id="size" name="size" class="form-control">
+                                            <option>Chọn size</option>
+                                            @foreach (var productDetail in productDetails)
+                                            {
+                                                <option value="@productDetail.Size">@productDetail.Size</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <select id="color" name="color" class="form-control">
+                                            <option>Chọn màu</option>
+                                            @foreach (var productDetail in productDetails)
+                                            {
+                                                <option value="@productDetail.Color">@productDetail.Color</option>
+                                            }
+                                        </select>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <input id="size" name="size" type="hidden" />
+                                    <input id="color" name="color" type="hidden" />
+                                }
+                            </div>
+                            @if (!allOutOfStock)
+                            {
+                                <div class="form-group row mt-1 mb-1" style="width:282px; margin-left:0px;">
+                                    <input type="number" id="quantity" name="quantity" min="1" class="form-control" placeholder="Nhập số lượng" required>
+                                </div>
+                                <input type="submit" class="btn btn-secondary" style="width:282px;" value="Thêm vào giỏ hàng" />
+                            }
+                            else
+                            {
+                                <!-- Không hiển thị ô nhập số lượng nếu tất cả sản phẩm đều hết hàng -->
+                                <div class="form-group row mt-2 mb-2" style="width:282px; margin-left:0px;">
+                                    <input type="number" id="quantity" name="quantity" min="1" class="form-control" readonly required placeholder="Nhập số lượng">
+                                </div>
+                                <input type="submit" class="btn btn-secondary" style="width:282px;" value="Thêm vào giỏ hàng" disabled />
+                            }
+                        </form>
+                    </div>
+                </div>
+                <fieldset class="mt-4 custom-fieldset">
+                    <legend>
+                        <img width="32" height="32" alt="Khuyến mãi" src="https://cdn.shopvnb.com/themes/images/code_dis.gif" /> ƯU ĐÃI</h6>
+                    </legend>
+                    <div class="product-promotions-list-content">
+                        @if (Model.CategoryId == 1)
+                        {
+                            <p>✔ Tặng 2 Quấn cán vợt Cầu Lông: AG-168, Joto 001 hoặc VS002 </p>
+                            <p>✔ Sản phẩm cam kết chính hãng</p>
+                            <p>✔ Một số sản phẩm sẽ được tặng bao đơn hoặc bao nhung bảo vệ vợt</p>
+                            <p>✔ Thanh toán sau khi kiểm tra và nhận hàng (Giao khung vợt)</p>
+                            <p>✔ Bảo hành chính hãng theo nhà sản xuất (Trừ hàng nội địa, xách tay)</p>
+                            <p>✔ Sơn logo mặt vợt miễn phí</p>
+                            <p>✔ Bảo hành lưới đan trong 72 giờ</p>
+                        }
+                        else if (Model.CategoryId == 2)
+                        {
+                            <p>✔ Tặng 1 đôi vớ cầu lông VNB(vớ VNB dài nhiều màu hoặc vớ VNB ngắn)</p>
+                            <p>✔ Sản phẩm cam kết chính hãng</p>
+                            <p>✔ Thanh toán sau khi kiểm tra và nhận hàng</p>
+                            <p>✔ Bảo hành chính hãng theo nhà sản xuất(Trừ hàng nội địa, xách tay)</p>
+                        }
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        @if (Model.Images != null && Model.Images.Count > 1)
+        {
+            <div class="col-md-6">
+                <div class="row">
+                    @foreach (var image in Model.Images.Skip(1))
+                    {
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="border">
+                                <img src="~/images/Product/@image.Url" alt="Thumbnail Image" onclick="changeImage(this)" class="img-fluid rounded main-image" style="width: 140px; height: 300px;" />
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+    <div>
+        <p class="h2">Mô tả sản phẩm</p>
+        <p class="fs-4">@Model.Description</p>
+    </div></br>
+    <div class="bg-white">
+        <h2>Đánh giá</h2>
+        <p>
+            <label class="h3" style="color:#fd7e14">@averageRating</label>
+            @for (int i = 0; i < fullStars; i++)
+            {
+                <span class="bi bi-star-fill fs-2" style="color:#fd7e14"></span>
+            }
+
+            @if (halfStar == 1)
+            {
+                <span class="bi bi-star-half fs-2" style="color:#fd7e14"></span>
+            }
+
+            @for (int i = 0; i < emptyStars; i++)
+            {
+                <span class="bi bi-star fs-2" style="color:#fd7e14"></span>
+            }
+        </p>
+        @foreach (var evaluation in Model.Evaluations)
+        {
+            <div>
+                <p class="mb-2">@userFullName</p>
+                <p class="mb-2">
+                    @for (int i = 0; i < 5; i++)
+                    {
+                        <span class="bi @(i < evaluation.Rating ? "bi-star-fill " : "bi-star")" style="color:#fd7e14"></span>
+                    }
+                </p>
+                <p class="mb-2">@evaluation.ReviewDate</p>
+                <p>@evaluation.Content</p>
+                <hr />
+            </div>
+        }
+
+    </div>
+    <form id="evaluationForm" asp-action="AddEvaluation" asp-controller="Evaluate" method="post">
+        <input type="hidden" name="productId" value="@Model.ProductId" />
+        <input type="hidden" name="userId" value="@userId" />
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+        @if (TempData["ErrorRating"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @TempData["ErrorRating"]
+            </div>
+        }
+        <div>
+            <div id="starRating">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <span class="bi bi-star fs-3" data-value="@i" style="color:#fd7e14"></span>
+                }
+            </div>
+            <input type="hidden" id="rating" name="rating" data-value="0" />
+        </div>
+        <div>
+            <textarea id="content" name="content" required placeholder="Nhập nội dung..." class="w-100 rounded-2" oninput="autoResize(this)"></textarea>
+        </div>
+        <div id="ratingAlert" style="display:none; color:red;">
+            Vui lòng chọn ít nhất một ngôi sao.
+        </div>
+        <button type="submit" class="rounded-1" onclick="checkRating()">Gửi</button>
+    </form>
+</div>
+    @section scripts {
+        <script>
+            function changeImage(img) {
+                var mainImage = document.getElementById('mainImage');
+                var tempSrc = mainImage.src;
+                mainImage.src = img.src;
+                img.src = tempSrc;
+            }
+        </script>
+    }

@@ -1,0 +1,238 @@
+﻿@using System.Security.Claims
+@model IEnumerable<SH_SHOP.Models.Product>
+@inject ApplicationDbContext context;
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    // Lấy tên của danh mục từ sản phẩm đầu tiên trong danh sách
+    string categoryName = "";
+    var firstProduct = Model.FirstOrDefault();
+    if (firstProduct != null && firstProduct.Category != null)
+    {
+        categoryName = firstProduct.Category.Name;
+    }
+}
+
+<div class="container mt-5">
+    <h1 class="text-center p-5">@categoryName</h1>
+    <div class="mb-3 d-flex justify-content-end">
+        <form method="get" asp-action="Sort" id="sortForm" style="margin-bottom: 0;">
+            <input type="hidden" name="categoryId" value="@Model.FirstOrDefault()?.CategoryId" />
+            <select name="sortBy" class="form-control rounded-pill mr-2" style="width: 200px; height:48px; margin-right:20px;" onchange="this.form.submit()">
+                <option value="">Sắp xếp</option>
+                <option value="PriceDesc">Giá giảm dần</option>
+                <option value="PriceAsc">Giá tăng dần</option>
+                <option value="NameAsc">Tên (A-Z)</option>
+                <option value="NameDesc">Tên (Z-A)</option>
+            </select>
+        </form>
+    </div>
+    <div class="row">
+        <div class="col-md-3 border">
+            <div class="container">
+                <form id="filterForm" action="@Url.Action("FilterProducts", "Home")" method="get">
+                    <input type="hidden" name="categoryId" value="@Model.FirstOrDefault()?.CategoryId" />
+                    <h4>Chọn mức giá</h4>
+                    <label>
+                        <input type="checkbox" name="priceRange" value="under500k" onchange="this.form.submit()"
+                        @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("under500k") ? "checked" : "")>
+                        <span>Giá dưới 500.000đ</span>
+                    </label>
+                    <br>
+                    <label>
+                        <input type="checkbox" name="priceRange" value="500k-1m" onchange="this.form.submit()"
+                        @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("500k-1m") ? "checked" : "")>
+                        <span>500.000đ - 1 triệu</span>
+                    </label>
+                    <br>
+                    <label>
+                        <input type="checkbox" name="priceRange" value="1m-2m" onchange="this.form.submit()"
+                        @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("1m-2m") ? "checked" : "")>
+                        <span>1 triệu - 2 triệu</span>
+                    </label>
+                    <br>
+                    <label>
+                        <input type="checkbox" name="priceRange" value="2m-3m" onchange="this.form.submit()"
+                        @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("2m-3m") ? "checked" : "")>
+                        <span>2 triệu - 3 triệu</span>
+                    </label>
+                    <br>
+                    <label>
+                        <input type="checkbox" name="priceRange" value="over3m" onchange="this.form.submit()"
+                        @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("over3m") ? "checked" : "")>
+                        <span>Giá trên 3 triệu</span>
+                    </label>
+                    <br>
+                    <h4>Chọn nhãn hiệu</h4>
+                    <label>
+                        <input type="checkbox" name="trademark" value="Lining" onchange="this.form.submit()"
+                        @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("Lining") ? "checked" : "")>
+                        <span>Lining</span>
+                    </label>
+                    <br>
+                    <label>
+                        <input type="checkbox" name="trademark" value="Yonex" onchange="this.form.submit()"
+                        @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("Yonex") ? "checked" : "")>
+                        <span>Yonex</span>
+                    </label>
+                    <br>
+                    <label>
+                        <input type="checkbox" name="trademark" value="Mizuno" onchange="this.form.submit()"
+                        @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("Mizuno") ? "checked" : "")>
+                        <span>Mizuno</span>
+                    </label>
+                    <br>
+                    <label>
+                        <input type="checkbox" name="trademark" value="Victor" onchange="this.form.submit()"
+                        @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("Victor") ? "checked" : "")>
+                        <span>Victor</span>
+                    </label>
+                    <br>
+                    @if(categoryName == "Vợt cầu lông")
+                    {
+                        <h4>Chọn theo trọng lượng</h4>
+                        <label>
+                            <input type="checkbox" name="size" value="3U" onchange="this.form.submit()"
+                            @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("3U") ? "checked" : "")>
+                            <span>3U: 85-89g</span>
+                        </label>
+                        <br>
+                        <label>
+                            <input type="checkbox" name="size" value="4U" onchange="this.form.submit()"
+                            @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("4U") ? "checked" : "")>
+                            <span>4U: 80-84g</span>
+                        </label>
+                        <br>
+                        <label>
+                            <input type="checkbox" name="size" value="5U" onchange="this.form.submit()"
+                            @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("5U") ? "checked" : "")>
+                            <span>5U: 75-79g</span>
+                        </label>
+                    }
+                    @if (categoryName == "Giày cầu lông")
+                    {
+                        <h4>Chọn theo size</h4>
+                        <label>
+                            <input type="checkbox" name="size" value="38" onchange="this.form.submit()"
+                            @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("38") ? "checked" : "")>
+                            <span>Size 38</span>
+                        </label>
+                        <br>
+                        <label>
+                            <input type="checkbox" name="size" value="39" onchange="this.form.submit()"
+                            @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("39") ? "checked" : "")>
+                            <span>Size 39</span>
+                        </label>
+                        <br>
+                        <label>
+                            <input type="checkbox" name="size" value="40" onchange="this.form.submit()"
+                            @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("40") ? "checked" : "")>
+                            <span>Size 40</span>
+                        </label>
+                        <br>
+                        <label>
+                            <input type="checkbox" name="size" value="41" onchange="this.form.submit()"
+                            @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("41") ? "checked" : "")>
+                            <span>Size 41</span>
+                        </label>
+                        <br>
+                        <label>
+                            <input type="checkbox" name="size" value="42" onchange="this.form.submit()"
+                            @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("42") ? "checked" : "")>
+                            <span>Size 42</span>
+                        </label>
+                        <br>
+                        <label>
+                            <input type="checkbox" name="size" value="43" onchange="this.form.submit()"
+                            @(ViewData["AppliedFilters"] != null && ((List<string>)ViewData["AppliedFilters"]).Contains("43") ? "checked" : "")>
+                            <span>Size 43</span>
+                        </label>
+                        <br>
+                    }
+                </form>
+            </div>
+        </div>
+        <div class="col-md-9 row">
+            @if (!Model.Any())
+            {
+                <h2 class="d-flex justify-content-center">Không có sản phẩm nào để hiển thị.</h2>
+            }
+            else
+            {
+                @foreach (var item in Model)
+                {
+                    <div class="col-lg-4 mb-3">
+                        <div class="card border-primary" style="height:590px;">
+                            <a asp-controller="Home" asp-action="Detail" asp-route-productId="@item.ProductId" class="text-decoration-none">
+                                <div class="card-body text-black">
+                                    <!-- Hình ảnh sản phẩm -->
+                                    @if (item.Images != null && item.Images.Any())
+                                    {
+                                        <img src="~/images/Product/@item.Images[0].Url" alt="Product Image" class="card-img-top" style="height: 440px; object-fit: cover;">
+                                    }
+                                    else
+                                    {
+                                        <img src="~/images/SHB.png" alt="Product Image" style="height: 390px; object-fit: cover;">
+                                    }
+                                    <!-- Tên sản phẩm -->
+                                    <h5 class="card-title" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">
+                                        @item.ProductName
+                                    </h5>
+                                    <!-- Giá sản phẩm -->
+                                    <div>
+                                        @if (item.Promotion != null && item.Promotion.Discount > 0)
+                                        {
+                                            <p class="card-text text-danger"><strong>@string.Format("{0:N0}", (float)item.DiscountedPrice) VNĐ</strong></p>
+                                        }
+                                        else
+                                        {
+                                            <p class="card-text text-danger"><strong>Giá: @string.Format("{0:N0}", (float)item.Price) VNĐ</strong></p>
+                                        }
+                                    </div>
+                                </div>
+                                <form method="post" asp-controller="WishList" asp-action="AddWishList">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    @if (context.LikeProducts.FirstOrDefault(i => i.UserId == userId && i.ProductId == item.ProductId) == null)
+                                    {
+                                        <button type="submit" class="border-0 bg-white"><i class="bi bi-suit-heart-fill fs-4 text-primary position-absolute bottom-0 mb-2 end-0 me-2"></i></button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="border-0 bg-white"><i class="bi bi-suit-heart-fill fs-4 text-danger position-absolute bottom-0 mb-2 end-0 me-2"></i></button>
+                                    }
+                                </form>
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Pagination controls -->
+<div class="d-flex justify-content-center mt-3">
+    <ul class="pagination">
+        @if (ViewBag.PageNumber > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" href="@Url.Action("ProductList", new { categoryId = ViewBag.CategoryId, pageNumber = ViewBag.PageNumber - 1 })">Previous</a>
+            </li>
+        }
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(i == ViewBag.PageNumber ? "active" : "")">
+                <a class="page-link" href="@Url.Action("ProductList", new { categoryId = ViewBag.CategoryId, pageNumber = i })">@i</a>
+            </li>
+        }
+        @if (ViewBag.PageNumber < ViewBag.TotalPages)
+        {
+            <li class="page-item">
+                <a class="page-link" href="@Url.Action("ProductList", new { categoryId = ViewBag.CategoryId, pageNumber = ViewBag.PageNumber + 1 })">Next</a>
+            </li>
+        }
+    </ul>
+</div>
+

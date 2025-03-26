@@ -1,0 +1,41 @@
+﻿@model IEnumerable<SH_SHOP.Models.LikeProduct>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <h1 class="text-center" style="margin-top:70px;">Sản phẩm yêu thích của bạn</h1>
+    @if (!Model.Any())
+    {
+        <p>Chưa có sản phẩm yêu thích</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var likeProduct in Model)
+            {
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="position-relative">
+                        <a asp-controller="Home" asp-action="Detail" asp-route-productId="@likeProduct.ProductId" class="text-decoration-none">
+                            <div class="card">
+                                <img src="~/images/Product/@likeProduct.Product.Images.First().Url" alt="Product Image" class="card-img-top" style="height: 500px;">
+                                <div class="card-body">
+                                    <h5 class="card-title">@likeProduct.Product.ProductName</h5>
+                                    <p class="card-text text-danger fw-bold">Giá: @likeProduct.Product.Price</p>
+                                </div>
+                            </div>
+                        </a>
+                        <form asp-controller="WishList" asp-action="RemoveLike" method="post" style="position: absolute; top: 0; right: 0;">
+                            <input type="hidden" name="productId" value="@likeProduct.ProductId" />
+                            <input type="hidden" name="userId" value="@likeProduct.UserId" />
+                            <button type="submit" class="bi bi-x-lg text-danger btn btn-sm"></button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+

@@ -1,0 +1,134 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+.slide {
+    white-space: nowrap;
+    overflow: hidden;
+    animation: slideRightToLeft infinite linear;
+}
+
+@keyframes slideRightToLeft {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+.btn-square {
+    background-color: transparent;
+}
+
+.btn.btn-square {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin-right: 10px;
+}
+
+.social-icon {
+    height: 40px;
+    width: 40px;
+    background-color: transparent;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: white;
+}
+
+main {
+    padding-top: 100px;
+}
+
+.chat-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+}
+
+
+.chat-section {
+    width: 400px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    opacity: 0; /* ??t ?? trong su?t ban ??u là 0 */
+    visibility: hidden; /* ?n ph?n t? */
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.chat-section.visible {
+    opacity: 1; /* ??t ?? trong su?t thành 1 khi hi?n th? */
+    visibility: visible; /* Hi?n th? ph?n t? */
+}
+
+
+#closeButton {
+    margin-top: -10px;
+    background-color: transparent;
+    border: none;
+    margin-left:320px;
+}
+#messagesList {
+    display: flex;
+    flex-direction: column-reverse;
+    padding-bottom:15px;
+}
+
+
+#messageInput {
+    margin-right: 15px;
+    border-radius: 30px;
+}
+.message {
+    margin-bottom: 5px;
+    padding: 5px 10px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.message-sent {
+    text-align: right;
+    margin-bottom:5px;
+}
+
+.message-received {
+    text-align: left;
+}
+
+#errorMessage {
+    color: red;
+    display: none;
+}

@@ -1,0 +1,74 @@
+﻿@model SH_SHOP.Models.Product
+@{
+    ViewData["Title"] = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var promotions = ViewBag.Promotions as SelectList;
+}
+
+<h1 class="text-center">Thêm sản phẩm</h1>
+<hr />
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Add" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label class="control-label fw-bold">Tên sản phẩm</label> <br />
+                    <span asp-validation-for="ProductName" class="text-danger"></span>
+                    <input asp-for="ProductName" class="form-control mb-2" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label fw-bold">Giá</label><br />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                    <input asp-for="Price" class="form-control mb-2" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label fw-bold">Mô tả</label><br />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                    <textarea asp-for="Description" class="form-control mb-2" style="height: auto; min-height: 100px; max-height: none;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="control-label fw-bold">Giới tính</label>
+                    <span asp-validation-for="Gender" class="text-danger"></span>
+                    <select asp-for="Gender" class="form-control mb-2">
+                        <option value="">Chọn giới tính</option>
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label  fw-bold">Hình ảnh</label>
+                    <span asp-validation-for="Images" class="text-danger"></span>
+                    <input type="file" name="imageUrls" asp-for="Images" class="form-control mb-2" multiple />
+                </div>
+                <div class="form-group">
+                    <label class="control-label  fw-bold">Chọn loại sản phẩm</label><br />
+                    <select asp-for="CategoryId" class="form-control mb-2" asp-items="ViewBag.Categories"></select>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label  fw-bold">Chọn thương hiệu</label><br />
+                    <select asp-for="TradeMarkId" class="form-control mb-2" asp-items="ViewBag.TradeMarks"></select>
+                </div>
+                @if (promotions != null && promotions.Any())
+                {
+                    <div class="form-group">
+                        <label class="control-label  fw-bold">Chọn giảm giá</label>
+                        <select asp-for="PromotionId" class="form-control mb-2" asp-items="ViewBag.Promotions"></select>
+                    </div>
+                }             
+                <div class="form-group mt-2">
+                    <input type="submit" value="Thêm" class="btn btn-dark" /> |
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
